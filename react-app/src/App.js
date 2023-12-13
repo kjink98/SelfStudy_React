@@ -85,10 +85,14 @@ function App() {
     }
     content = <Article title={title} body={body}></Article>
   } else if (mode === "CREATE") {
-    content = <Create onCreate={(title, body) => {
+    content = <Create onCreate={(_title, _body) => {
       const newTopic = { id: nextId, title: _title, body: _body }
-      topics.push(newTopic);
-      setTopics(topics);
+      const newTopics = [...topics]
+      newTopics.push(newTopic);
+      setTopics(newTopics);
+      setMode('READ');
+      setId(nextId);
+      setNextId(nextId + 1);
     }}></Create>
   }
 
@@ -102,10 +106,14 @@ function App() {
         setId(_id);
       }}></Nav>
       {content}
-      <a href='/create' onClick={event => {
-        event.preventDefault();
-        setMode('CREATE');
-      }}>Create</a>
+      <ul>
+        <li>
+          <a href='/create' onClick={event => {
+            event.preventDefault();
+            setMode('CREATE');
+          }}>Create</a></li>
+        <li><a href="/update">Update</a></li>
+      </ul>
     </div>
   );
 }
