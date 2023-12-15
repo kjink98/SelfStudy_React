@@ -61,6 +61,24 @@ function Create(props) {
   )
 }
 
+function Update(props) {
+  return (
+    <article>
+      <h2>Update</h2>
+      <form onSubmit={event => {
+        event.preventDefault();
+        const title = event.target.title.value;
+        const body = event.target.body.value;
+        props.onUpdate(title, body);
+      }}>
+        <p><input type="text" name="title" placeholder='title' value={props.title} /></p>
+        <p><textarea name="body" placeholder='body' value={props.body}></textarea></p>
+        <p><input type='submit' value="Update"></input></p>
+      </form>
+    </article>
+  )
+}
+
 function App() {
   const [mode, setMode] = useState('WELCOME');
   const [id, setId] = useState(null);
@@ -72,6 +90,7 @@ function App() {
   ]);
 
   let content = null;
+  let contextControl = null;
 
   if (mode === 'WELCOME') {
     content = <Article title="Welcome" body="Hello, Web"></Article>
@@ -84,6 +103,10 @@ function App() {
       }
     }
     content = <Article title={title} body={body}></Article>
+    contextControl = <li><a href={"/update/" + id} onClick={event => {
+      event.preventDefault();
+      setMode('UPDATE');
+    }}>Update</a></li>
   } else if (mode === "CREATE") {
     content = <Create onCreate={(_title, _body) => {
       const newTopic = { id: nextId, title: _title, body: _body }
@@ -94,6 +117,17 @@ function App() {
       setId(nextId);
       setNextId(nextId + 1);
     }}></Create>
+  } else if (mode === "UPDATE") {
+    let title, body = null;
+    for (let i = 0; i < topics.length; i++) {
+      if (topics[i].id === id) {
+        title = topics[i].title;
+        body = topics[i].body;
+      }
+    }
+    content = <Update title={title} body={body} onUpdate={(title, body) => {
+
+    }}></Update>
   }
 
   return (
@@ -112,7 +146,7 @@ function App() {
             event.preventDefault();
             setMode('CREATE');
           }}>Create</a></li>
-        <li><a href="/update">Update</a></li>
+        {contextControl}
       </ul>
     </div>
   );
